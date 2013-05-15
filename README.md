@@ -38,10 +38,11 @@ CREATE TABLE `customer` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 ```
+
 To import the sql file, run the following from your command line.
 ```
 mysql -u YOURUSERNAME -p YOURDATABASENAME < customer.sql
-
+```
 More functionality will be added as I progress.
 
 [logo]: https://github.com/caseyscarborough/jtables-crud/raw/master/img/1.png "The application's basic layout."
