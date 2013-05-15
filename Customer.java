@@ -2,10 +2,15 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -18,10 +23,12 @@ import java.text.SimpleDateFormat;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -77,9 +84,50 @@ public class Customer {
 			System.out.println(e.getMessage()); 
 		}
 		
-		table.setFont(new Font("Sans-serif", Font.PLAIN, 18));
+		Font font;
+		try {
+			font = Font.createFont(Font.TRUETYPE_FONT, new File("DroidSerif-Regular.ttf"));
+			font = font.deriveFont(Font.PLAIN, 18);
+		} catch(IOException e) {
+			font = new Font("Serif", Font.PLAIN, 18);
+		} catch (FontFormatException e) {
+			font = new Font("Serif", Font.PLAIN, 18);
+		}
+		
+		table.setFont(font);
 		table.setRowHeight(table.getRowHeight() + 8);
 		table.setAutoCreateRowSorter(true);
+		
+		table.addMouseListener(new MouseAdapter() {
+			public void mouseReleased(MouseEvent mouseEvent) {
+				if (SwingUtilities.isRightMouseButton(mouseEvent)) {
+					String value = JOptionPane.showInputDialog(null, "Enter Cell Value:");
+					if(value != null) {
+						table.setValueAt(value, table.getSelectedRow(), table.getSelectedColumn());
+						String updateColumn;
+						
+						try {
+							rows.absolute(table.getSelectedRow()+1);
+							updateColumn = defaultTableModel.getColumnName(table.getSelectedColumn());
+						
+							switch(updateColumn) {
+							case "Date_Registered":
+								sqlDateRegistered = getADate(value);
+								rows.updateDate(updateColumn, (Date) sqlDateRegistered);
+								rows.updateRow();
+								break;
+							default:
+								rows.updateString(updateColumn, value);
+								rows.updateRow();
+								break;
+							} 
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+					}
+				}
+			}
+		});
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		frame.add(scrollPane, BorderLayout.CENTER);
@@ -135,6 +183,8 @@ public class Customer {
 		TableColumn tc = table.getColumn("ID");
 		tc.setCellRenderer(centerColumns);
 		
+		
+		
 		frame.setSize(1110,500);
 		frame.setVisible(true);
 	}
@@ -151,17 +201,17 @@ public class Customer {
 				state = tfState.getText();
 				dateRegistered = tfDateRegistered.getText();
 				
-				SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-				
-				try {
-					dateDateRegistered = dateFormatter.parse(dateRegistered);
-					sqlDateRegistered = new java.sql.Date(dateDateRegistered.getTime());
-				} catch (ParseException e1) {
-					System.out.println(e1.getMessage());
-					if(e1.getMessage().toString().startsWith("Unparseable date:")) {
-						errorMessage.setText("The date should be in the following format: YYYY-MM-DD"); 
-					}
+				if(!state.matches("[A-Za-z]{2}")) {
+					errorMessage.setText("A state should be a two-letter abbreviation.");
+					return;
 				}
+				
+				if(!dateRegistered.matches("[0-2][0-9]{3}-[0-1][0-2]-[0-3][0-9]")) {
+					errorMessage.setText("The date should be in the following format: YYYY-MM-DD");
+					return;
+				}
+				
+				sqlDateRegistered = getADate(dateRegistered);
 				
 				int customerID = 0;
 				
@@ -203,6 +253,21 @@ public class Customer {
 				}
 			}
 		}
+	}
+	
+	private static java.util.Date getADate(String dateRegistered) {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+		
+		try {
+			dateDateRegistered = dateFormatter.parse(dateRegistered);
+			sqlDateRegistered = new java.sql.Date(dateDateRegistered.getTime());
+		} catch (ParseException e1) {
+			System.out.println(e1.getMessage());
+			if(e1.getMessage().toString().startsWith("Unparseable date:")) {
+				errorMessage.setText("The date should be in the following format: YYYY-MM-DD"); 
+			}
+		}
+		return sqlDateRegistered;
 	}
 	
 	// My terrible and possibly hack-ish way of implementing 'placeholders' in the JTextFields.
