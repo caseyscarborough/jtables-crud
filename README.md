@@ -8,7 +8,23 @@ The Application
 
 The application contains a JTable that is used to display the data from the database. This is auto-sortable, and the interface contains text fields for insertion, as well as an error reporting area at the top. Below is a screenshot of the application.
 
-![alt text][logo]
+![alt text][layout]
+
+### Adding an Entry
+
+You are able to add an entry by using the combination of JTextFields and JButtons at the bottom row of the application. Data must be entered properly or an error will be displayed. States are added using exactly two letters, while dates are added in the following format: YYYY-MM-DD.
+
+![alt text][adding]
+
+### Removing an Entry
+
+Removing an entry is as simple as selecting an entry from the table and clicking the Remove Customer button.
+
+### Editing an Entry
+
+To edit an entry in the database, first select any entry in the table by clicking on the entry, then right click the cell in that entry that you'd like to edit. After doing so, a JOptionPane will appear with the option for you to enter the new value for that cell.
+
+![alt text][editing]
 
 The Database
 ------------
@@ -45,4 +61,6 @@ mysql -u YOURUSERNAME -p YOURDATABASENAME < customer.sql
 ```
 More functionality will be added as I progress.
 
-[logo]: https://github.com/caseyscarborough/jtables-crud/raw/master/img/1.png "The application's basic layout."
+[layout]: https://github.com/caseyscarborough/jtables-crud/raw/master/img/1.png "The application's basic layout."
+[adding]: https://github.com/caseyscarborough/jtables-crud/raw/master/img/2.png "Recommended format for adding data."
+[editing]: https://github.com/caseyscarborough/jtables-crud/raw/master/img/3.png "JOptionPane for data editing."
