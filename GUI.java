@@ -29,7 +29,16 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 
+/**
+ * GUI class used to display and interact with information from
+ * a MySQL database graphically.
+ * @author Casey Scarborough
+ * @since 2013-05-15
+ * @see Database
+ */
 public class GUI extends JFrame {
+	
+	// Create buttons, labels, text fields, a new JTable, a Font, and the dates
 	private JButton addCustomer, removeCustomer;
 	private JLabel errorMessage;
 	private JTextField tfFirstName, tfLastName, tfPhoneNumber, tfEmailAddress, tfCity, tfState, tfDateRegistered;
@@ -37,12 +46,17 @@ public class GUI extends JFrame {
 	private java.util.Date dateDateRegistered, sqlDateRegistered;
 	private Font font;
 	
+	/**
+	 * Constructor for the GUI class.
+	 * @param db the database object used to manipulate the database.
+	 */
 	public GUI(Database db) {
 		super();
 		table = new JTable(db.defaultTableModel);
 		
+		// If the font is available, set it, if not, use the Serif font
 		try {
-			font = Font.createFont(Font.TRUETYPE_FONT, new File("DroidSerif-Regular.ttf"));
+			font = Font.createFont(Font.TRUETYPE_FONT, new File("DroidSerif-Regular2.ttf"));
 			font = font.deriveFont(Font.PLAIN, 18);
 		} catch(IOException e) {
 			font = new Font("Serif", Font.PLAIN, 18);
@@ -54,19 +68,24 @@ public class GUI extends JFrame {
 		table.setRowHeight(table.getRowHeight() + 8);
 		table.setAutoCreateRowSorter(true);
 		
+		// Create a new mouse listener and assign it to the table
 		ListenForMouse mouseListener = new ListenForMouse();
 		table.addMouseListener(mouseListener);
 		
+		// Create a JScrollPane and add it to the center of the window
 		JScrollPane scrollPane = new JScrollPane(table);
 		this.add(scrollPane, BorderLayout.CENTER);
 		
+		// Set button values
 		addCustomer = new JButton("Add Customer");
 		removeCustomer = new JButton("Remove Customer");
 		
+		// Add action listeners to the buttons to listen for clicks
 		ListenForAction actionListener = new ListenForAction();
 		addCustomer.addActionListener(actionListener);
 		removeCustomer.addActionListener(actionListener);
 		
+		// Set the text field widths and values
 		tfFirstName = new JTextField("First Name", 6);
 		tfLastName = new JTextField("Last Name", 8);
 		tfPhoneNumber = new JTextField("Phone Number", 8);
@@ -75,6 +94,7 @@ public class GUI extends JFrame {
 		tfState = new JTextField("State", 3);
 		tfDateRegistered = new JTextField("Date Registered", 9);
 		
+		// Create a focus listener and add it to each text field to remove text when clicked on
 		ListenForFocus focusListener = new ListenForFocus();
 		tfFirstName.addFocusListener(focusListener);
 		tfLastName.addFocusListener(focusListener);
@@ -84,6 +104,7 @@ public class GUI extends JFrame {
 		tfState.addFocusListener(focusListener);
 		tfDateRegistered.addFocusListener(focusListener);
 		
+		// Create a new panel and add the text fields and add/remove buttons to it
 		JPanel inputPanel = new JPanel();
 		inputPanel.add(tfFirstName);
 		inputPanel.add(tfLastName);
@@ -96,24 +117,32 @@ public class GUI extends JFrame {
 		inputPanel.add(addCustomer);
 		inputPanel.add(removeCustomer);
 		
+		// Change settings and add the error message to the error panel
 		errorMessage = new JLabel("");
 		errorMessage.setForeground(Color.red);
 		JPanel errorPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		errorPanel.add(errorMessage);
 		
-		
+		// set the input panel to the bottom and the error panel to the top
 		this.add(inputPanel, BorderLayout.SOUTH);
 		this.add(errorPanel, BorderLayout.NORTH);
 		
+		// Center the ID column in the table
 		DefaultTableCellRenderer centerColumns = new DefaultTableCellRenderer();
 		centerColumns.setHorizontalAlignment(JLabel.CENTER);
 		TableColumn tc = table.getColumn("ID");
 		tc.setCellRenderer(centerColumns);
 	}
 	
+	/**
+	 * ActionListener implementation to listen for actions such
+	 * as button clicks.
+	 * @author Casey Scarborough
+	 */
 	private class ListenForAction implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			if(e.getSource() == addCustomer) {
+			if(e.getSource() == addCustomer) { // If the user clicks Add Customer, add the information into the database
+				// Create variables to hold information to be inserted, and get the info from the text fields
 				String firstName, lastName, phoneNumber, emailAddress, city, state, dateRegistered;
 				firstName = tfFirstName.getText();
 				lastName = tfLastName.getText();
@@ -123,21 +152,24 @@ public class GUI extends JFrame {
 				state = tfState.getText();
 				dateRegistered = tfDateRegistered.getText();
 				
+				// Check that the state matches the required format, if not display an error and return
 				if(!state.matches("[A-Za-z]{2}")) {
 					errorMessage.setText("A state should be a two-letter abbreviation.");
 					return;
 				}
 				
+				// Check that the date matches the required format, if not display an error and return
 				if(!dateRegistered.matches("[0-2][0-9]{3}-[0-1][0-2]-[0-3][0-9]")) {
 					errorMessage.setText("The date should be in the following format: YYYY-MM-DD");
 					return;
 				}
 				
+				// Convert the date
 				sqlDateRegistered = getADate(dateRegistered);
 				
 				int customerID = 0;
 				
-				try {
+				try { // Attempt to insert the information into the database
 					Customer.db.rows.moveToInsertRow();
 					Customer.db.rows.updateString("first_name", firstName);
 					Customer.db.rows.updateString("last_name", lastName);
@@ -153,20 +185,20 @@ public class GUI extends JFrame {
 					Customer.db.rows.last();
 					customerID = Customer.db.rows.getInt(1);
 					Object[] customer = {customerID, firstName, lastName, phoneNumber, emailAddress, city, state, sqlDateRegistered};
-					Customer.db.defaultTableModel.addRow(customer);
-					errorMessage.setText("");
-				} catch (SQLException e2) {
+					Customer.db.defaultTableModel.addRow(customer); // Add the row to the screen
+					errorMessage.setText(""); // Remove the error message if one was displayed
+				} catch (SQLException e2) { // Catch any exceptions and display appropriate errors
 					System.out.println(e2.getMessage());
 					if (e2.getMessage().toString().startsWith("Data")) {
 						errorMessage.setText("A state should be a two-letter abbreviation."); 
 					}
 				}
 			} else if (e.getSource() == removeCustomer) {
-				try {
+				try { // If the user clicked remove customer, delete from database and remove from table
 					Customer.db.defaultTableModel.removeRow(table.getSelectedRow());
 					Customer.db.rows.absolute(table.getSelectedRow());
 					Customer.db.rows.deleteRow();
-				} catch(SQLException e1) {
+				} catch(SQLException e1) { // Catch any exceptions
 					System.out.println(e1.getMessage());
 					errorMessage.setText(e1.getMessage());
 				} catch(ArrayIndexOutOfBoundsException e1) {
@@ -177,10 +209,15 @@ public class GUI extends JFrame {
 		}
 	}
 	
-	// My terrible and possibly hack-ish way of implementing 'placeholders' in the JTextFields.
+	
+	/**
+	 * FocusListener implementation used to listen for JTextFields
+	 * being focused on.
+	 * @author Casey Scarborough
+	 */
 	private class ListenForFocus implements FocusListener {
-		
-		public void focusGained(FocusEvent e) {
+		// My terrible and possibly hack-ish way of implementing 'placeholders' in the JTextFields.
+		public void focusGained(FocusEvent e) { // If a text field gains focus and has the default text, remove the text
 			if(tfFirstName.getText().equals("First Name") && e.getSource() == tfFirstName) {
 				tfFirstName.setText("");
 			} else if(tfLastName.getText().equals("Last Name") && e.getSource() == tfLastName) {
@@ -198,7 +235,7 @@ public class GUI extends JFrame {
 			}
 		}
 
-		public void focusLost(FocusEvent e) {
+		public void focusLost(FocusEvent e) { // If the text field loses focus and is blank, set the default text back
 			if(tfFirstName.getText().equals("") && e.getSource() == tfFirstName) {
 				tfFirstName.setText("First Name");
 			} else if(tfLastName.getText().equals("") && e.getSource() == tfLastName) {
@@ -218,37 +255,52 @@ public class GUI extends JFrame {
 		
 	}
 	
+	/**
+	 * ListenForMouse class that listens for mouse events on cells so that
+	 * they can be updated.
+	 * @author Casey Scarborough
+	 *
+	 */
 	private class ListenForMouse extends MouseAdapter {
 		public void mouseReleased(MouseEvent mouseEvent) {
+			// If the mouse is released and the click was a right click
 			if (SwingUtilities.isRightMouseButton(mouseEvent)) {
+				// Create a dialog for the user to enter new data
 				String value = JOptionPane.showInputDialog(null, "Enter Cell Value:");
-				if(value != null) {
+				if(value != null) { // If they entered info, update the database
 					table.setValueAt(value, table.getSelectedRow(), table.getSelectedColumn());
 					String updateColumn;
 					
-					try {
+					try { // Go to the row in the db
 						Customer.db.rows.absolute(table.getSelectedRow()+1);
 						updateColumn = Customer.db.defaultTableModel.getColumnName(table.getSelectedColumn());
-					
+						
 						switch(updateColumn) {
+						// if the column was date_registered, convert date update using a Date
 						case "Date_Registered":
 							sqlDateRegistered = getADate(value);
 							Customer.db.rows.updateDate(updateColumn, (Date) sqlDateRegistered);
 							Customer.db.rows.updateRow();
 							break;
-						default:
+						default: // otherwise update using a String
 							Customer.db.rows.updateString(updateColumn, value);
 							Customer.db.rows.updateRow();
 							break;
 						} 
-					} catch (SQLException e1) {
-						e1.printStackTrace();
+					} catch (SQLException e1) { // Catch any exceptions and display an error
+						errorMessage.setText("An error has occurred.");
+						System.out.println(e1.getMessage());
 					}
 				}
 			}
 		}
 	}
 
+	/**
+	 * Method used to set the column widths of the JTable being displayed.
+	 * @param columns the Object array of column names.
+	 * @param widths the specified widths to set the columns to.
+	 */
 	public void setColumnWidths(Object[] columns, int...widths) {
 		TableColumn column;
 		for(int i = 0; i < columns.length; i++) {
@@ -257,10 +309,19 @@ public class GUI extends JFrame {
 		}
 	}
 	
+	/**
+	 * Used to set the message on the errorPanel.
+	 * @param message the message to display.
+	 */
 	public void setErrorMessage(String message) {
 		errorMessage.setText(message);
 	}
 	
+	/**
+	 * Converts a date into one that can be recorded into the database.
+	 * @param dateRegistered the date that the user inputs in the Date Registered field.
+	 * @return the newly converted date.
+	 */
 	public java.util.Date getADate(String dateRegistered) {
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 		
