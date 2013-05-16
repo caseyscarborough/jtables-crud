@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>JTables and MySQL in Java by caseyscarborough</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/caseyscarborough/jtables-crud">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/caseyscarborough/jtables-crud/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/caseyscarborough/jtables-crud/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>JTables and MySQL in Java</h1>
+          <p>A basic MySQL CRUD application using JTables and other graphical components in the Swing toolkit in Java. </p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/caseyscarborough">caseyscarborough</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>Working with JTables and MySQL in Java</h1>
+
+<p>This application is a basic MySQL CRUD application using JTables and other graphical components in the Swing toolkit in Java. The user will be able to run the application and navigate the items in the database using the JTable. This will include sorting, adding items, updating individual information in each row, and removing items.</p>
+
+<p>You can view the documentation for this application <a href="https://github.com/caseyscarborough/jtables-crud/raw/master/doc/index.html">here</a>.</p>
+
+<h2>The Application</h2>
+
+<p>The application contains a JTable that is used to display the data from the database. This is auto-sortable, and the interface contains text fields for insertion, as well as an error reporting area at the top. Below is a screenshot of the application.</p>
+
+<p><img src="https://github.com/caseyscarborough/jtables-crud/raw/master/img/1.png" alt="alt text" title="The application's basic layout."></p>
+
+<h3>Adding an Entry</h3>
+
+<p>You are able to add an entry by using the combination of JTextFields and JButtons at the bottom row of the application. Data must be entered properly or an error will be displayed. States are added using exactly two letters, while dates are added in the following format: YYYY-MM-DD.</p>
+
+<p><img src="https://github.com/caseyscarborough/jtables-crud/raw/master/img/2.png" alt="alt text" title="Recommended format for adding data."></p>
+
+<h3>Removing an Entry</h3>
+
+<p>Removing an entry is as simple as selecting an entry from the table and clicking the Remove Customer button.</p>
+
+<h3>Editing an Entry</h3>
+
+<p>To edit an entry in the database, first select any entry in the table by clicking on the entry, then right click the cell in that entry that you'd like to edit. After doing so, a JOptionPane will appear with the option for you to enter the new value for that cell.</p>
+
+<p><img src="https://github.com/caseyscarborough/jtables-crud/raw/master/img/3.png" alt="alt text" title="JOptionPane for data editing."></p>
+
+<h2>The Database</h2>
+
+<p>The application connects to a MySQL database that holds customer information. The information that it holds is as follows:</p>
+
+<ul>
+<li>ID</li>
+<li>First Name</li>
+<li>Last Name</li>
+<li>Phone Number</li>
+<li>Email Address</li>
+<li>City</li>
+<li>State</li>
+<li>Date Registered</li>
+</ul><p>You can create and populate the database with sample data by importing the customer.sql file included in the repository, or you can create this database on your own with the following MySQL:</p>
+
+<div class="highlight"><pre><span class="k">DROP</span> <span class="k">TABLE</span> <span class="n">IF</span> <span class="k">EXISTS</span> <span class="o">`</span><span class="n">customer</span><span class="o">`</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="o">`</span><span class="n">customer</span><span class="o">`</span> <span class="p">(</span>
+  <span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">first_name</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="k">COLLATE</span> <span class="n">utf8_unicode_ci</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">last_name</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="k">COLLATE</span> <span class="n">utf8_unicode_ci</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">phone_number</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span> <span class="k">COLLATE</span> <span class="n">utf8_unicode_ci</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">email_address</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">COLLATE</span> <span class="n">utf8_unicode_ci</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">city</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span> <span class="k">COLLATE</span> <span class="n">utf8_unicode_ci</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="o">`</span><span class="k">state</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="k">COLLATE</span> <span class="n">utf8_unicode_ci</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="o">`</span><span class="n">date_registered</span><span class="o">`</span> <span class="nb">date</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="n">AUTO_INCREMENT</span><span class="o">=</span><span class="mi">4</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8</span> <span class="k">COLLATE</span><span class="o">=</span><span class="n">utf8_unicode_ci</span><span class="p">;</span>
+</pre></div>
+
+<p>To import the sql file, run the following from your command line.</p>
+
+<pre><code>mysql -u YOURUSERNAME -p YOURDATABASENAME &lt; customer.sql
+</code></pre>
+
+<p>More functionality will be added as I progress.</p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
