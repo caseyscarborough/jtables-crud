@@ -3,6 +3,8 @@ Working with JTables and MySQL in Java
 
 This application is a basic MySQL CRUD application using JTables and other graphical components in the Swing toolkit in Java. The user will be able to run the application and navigate the items in the database using the JTable. This will include sorting, adding items, updating individual information in each row, and removing items.
 
+You can view the documentation for the application [here][documentation].
+
 The Application
 ---------------
 
@@ -61,6 +63,7 @@ mysql -u YOURUSERNAME -p YOURDATABASENAME < customer.sql
 ```
 More functionality will be added as I progress.
 
+[documentation]: http://caseyscarborough.github.io/jtables-crud/doc/
 [layout]: https://github.com/caseyscarborough/jtables-crud/raw/master/img/1.png "The application's basic layout."
 [adding]: https://github.com/caseyscarborough/jtables-crud/raw/master/img/2.png "Recommended format for adding data."
 [editing]: https://github.com/caseyscarborough/jtables-crud/raw/master/img/3.png "JOptionPane for data editing."
